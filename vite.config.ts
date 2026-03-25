@@ -21,6 +21,7 @@ export default defineConfig({
     clean: true,
     platform: 'node',
     exports: true,
+    deps: { alwaysBundle: ['@std/jsonc', '@std/toml'] },
   },
   fmt: {
     ignorePatterns: ['dist/**', '.changeset/**', 'CHANGELOG.md'],
