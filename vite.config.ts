@@ -1,11 +1,41 @@
-import tsdownConfig from './tsdown.config.js';
-
-import { defineConfig } from 'vite-plus';
+import { defineConfig } from 'vite-plus'
 
 export default defineConfig({
-  staged: {
-    "*": "vp check --fix"
+  run: {
+    tasks: {
+      build: {
+        command: 'vp pack',
+      },
+      dev: {
+        command: 'vp pack --watch',
+      },
+    },
   },
-  pack: tsdownConfig,
-  lint: {"options":{"typeAware":true,"typeCheck":true}},
-});
+  staged: {
+    '*': 'vp check --fix',
+  },
+  pack: {
+    entry: ['./src/local.ts', './src/http.ts'],
+    format: ['esm'],
+    dts: { tsgo: true },
+    clean: true,
+    platform: 'node',
+    exports: true,
+  },
+  fmt: {
+    ignorePatterns: ['dist/**', '.changeset/**', 'CHANGELOG.md'],
+    semi: false,
+    singleQuote: true,
+    sortImports: {},
+    sortPackageJson: { sortScripts: false },
+  },
+  lint: {
+    plugins: ['import', 'vitest'],
+    options: { typeAware: true, typeCheck: true },
+    ignorePatterns: ['dist/**'],
+    rules: {
+      'no-unused-vars': 'warn',
+      'typescript/consistent-type-imports': 'warn',
+    },
+  },
+})
