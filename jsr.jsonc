@@ -1,6 +1,6 @@
 {
   "name": "@mst-mkt/drizzle-d1-config",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "imports": {
     "@std/jsonc": "jsr:@std/jsonc@^1.0.2",
     "@std/toml": "jsr:@std/toml@^1.0.11",
