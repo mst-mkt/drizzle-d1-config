@@ -38,7 +38,7 @@ jobs:
       - name: build
         run: vp run build
       - name: publish to npm
-        run: pnpm publish --provenance --access public --no-git-checks
+        run: npm publish --provenance --access public
 
   publish-jsr:
     needs: github-release
