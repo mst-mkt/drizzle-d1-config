@@ -9,6 +9,9 @@ export default defineConfig({
       dev: {
         command: 'vp pack --watch',
       },
+      release: {
+        command: 'bumpp',
+      },
     },
   },
   staged: {
