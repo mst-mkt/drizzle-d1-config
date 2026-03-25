@@ -39,4 +39,7 @@ export default defineConfig({
       'typescript/consistent-type-imports': 'warn',
     },
   },
+  test: {
+    include: ['src/**/*.test.ts'],
+  },
 })
