@@ -7,14 +7,13 @@ settings:
 importers:
 
   .:
-    dependencies:
+    devDependencies:
       '@std/jsonc':
         specifier: jsr:^1.0.2
         version: '@jsr/std__jsonc@1.0.2'
       '@std/toml':
         specifier: jsr:^1.0.11
         version: '@jsr/std__toml@1.0.11'
-    devDependencies:
       '@types/node':
         specifier: ^24.12.0
         version: 24.12.0

@@ -29,11 +29,9 @@
   "scripts": {
     "prepare": "vp config"
   },
-  "dependencies": {
-    "@std/jsonc": "jsr:^1.0.2",
-    "@std/toml": "jsr:^1.0.11"
-  },
   "devDependencies": {
+    "@std/jsonc": "jsr:^1.0.2",
+    "@std/toml": "jsr:^1.0.11",
     "@types/node": "^24.12.0",
     "@typescript/native-preview": "7.0.0-dev.20260325.1",
     "bumpp": "^11.0.1",
