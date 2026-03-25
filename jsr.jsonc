@@ -1,0 +1,11 @@
+{
+  "name": "@mst-mkt/drizzle-d1-config",
+  "version": "0.0.0",
+  "publish": {
+    "include": ["src/**/*.ts", "README.md", "LICENSE"],
+  },
+  "exports": {
+    "./http": "./src/http.ts",
+    "./local": "./src/local.ts",
+  },
+}
