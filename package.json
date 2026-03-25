@@ -1,6 +1,6 @@
 {
   "name": "drizzle-d1-config",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Drizzle config helpers for Cloudflare D1",
   "keywords": [
     "cloudflare",
