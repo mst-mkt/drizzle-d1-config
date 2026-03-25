@@ -1,3 +1,9 @@
+/**
+ * Provides a helper for generating drizzle-kit config that connects to a remote D1 database via the Cloudflare HTTP API.
+ *
+ * @module
+ */
+
 import type { Config } from 'drizzle-kit'
 
 import { getAccountIdFromCache } from './internal/account'

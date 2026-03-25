@@ -1,3 +1,9 @@
+/**
+ * Provides a helper for generating drizzle-kit config that connects to a local D1 SQLite database file.
+ *
+ * @module
+ */
+
 import type { Config } from 'drizzle-kit'
 
 import { getD1SqlitePath } from './internal/d1-sqlite'
