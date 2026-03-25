@@ -16,6 +16,11 @@ type D1LocalConfig = {
   persistDir?: string
 }
 
+type D1LocalDrizzleConfig = Pick<
+  Extract<Config, { dialect: 'sqlite'; driver?: undefined }>,
+  'dialect' | 'dbCredentials' | 'out'
+>
+
 /**
  * Creates a Drizzle config for local Cloudflare D1 (SQLite via `.wrangler/state/v3/d1`).
  *
@@ -43,7 +48,7 @@ type D1LocalConfig = {
  * @throws If `databaseId` cannot be resolved from any source
  * @throws If multiple D1 databases are found and `binding` is not specified
  */
-export const d1Config = (config: D1LocalConfig = {}) => {
+export const d1Config = (config: D1LocalConfig = {}): D1LocalDrizzleConfig => {
   const needsWrangler = config.databaseId === undefined || config.out === undefined
 
   const wrangler = needsWrangler
@@ -63,5 +68,5 @@ export const d1Config = (config: D1LocalConfig = {}) => {
     dbCredentials: {
       url: getD1SqlitePath(databaseId, config.persistDir),
     },
-  } satisfies Config
+  }
 }

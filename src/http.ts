@@ -19,6 +19,11 @@ export type D1HttpConfig = {
   token?: string
 }
 
+type D1HttpDrizzleConfig = Pick<
+  Extract<Config, { driver: 'd1-http' }>,
+  'dialect' | 'driver' | 'dbCredentials' | 'out'
+>
+
 /**
  * Creates a Drizzle config for Cloudflare D1 via HTTP (remote).
  *
@@ -52,7 +57,7 @@ export type D1HttpConfig = {
  * @throws If `accountId`, `databaseId`, or `token` cannot be resolved from any source
  * @throws If multiple D1 databases are found and `binding` is not specified
  */
-export const d1Config = (config: D1HttpConfig = {}) => {
+export const d1Config = (config: D1HttpConfig = {}): D1HttpDrizzleConfig => {
   const needsWrangler =
     config.accountId === undefined || config.databaseId === undefined || config.out === undefined
 
@@ -83,5 +88,5 @@ export const d1Config = (config: D1HttpConfig = {}) => {
       databaseId,
       token,
     },
-  } satisfies Config
+  }
 }
