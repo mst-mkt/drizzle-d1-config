@@ -1,13 +1,13 @@
 # drizzle-d1-config
 
+A helper for easily configuring `drizzle.config.ts` when using Cloudflare D1.
+Automatically resolves the necessary settings from `wrangler.jsonc` and other sources.
+
 <div align="right">
 
 [Japanese >](./README.ja.md)
 
 </div>
-
-A helper for easily configuring `drizzle.config.ts` when using Cloudflare D1.
-Automatically resolves the necessary settings from `wrangler.jsonc` and other sources.
 
 ## Install
 
