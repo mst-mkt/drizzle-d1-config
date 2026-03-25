@@ -134,6 +134,64 @@ The path to a local SQLite file such as `.wrangler/state/v3/d1/miniflare-D1Datab
 Computed from `databaseId`.
 (ref: [cloudflare/workers-sdk/miniflare](https://github.com/cloudflare/workers-sdk/blob/5ededb5d52f4362ce8f72d442ba825d48dcabbf8/packages/miniflare/src/plugins/shared/index.ts#L275-L289))
 
+### Tips
+
+Here are two ways to switch between local and remote configurations.
+
+#### Environment Variable
+
+```typescript
+// drizzle.config.ts
+import { defineConfig } from 'drizzle-kit'
+import { d1Config as d1HttpConfig } from 'drizzle-d1-config/http'
+import { d1Config as d1LocalConfig } from 'drizzle-d1-config/local'
+
+const isLocal = process.env.NODE_ENV === 'development'
+
+export default defineConfig({
+  ...(isLocal ? d1LocalConfig() : d1HttpConfig()),
+  schema: './src/db/schema.ts',
+})
+```
+
+#### Separate Files
+
+```typescript
+// drizzle.config.ts
+import { defineConfig } from 'drizzle-kit'
+import { d1Config } from 'drizzle-d1-config/local'
+
+export default defineConfig({
+  ...d1Config(),
+  schema: './src/db/schema.ts',
+})
+```
+
+```typescript
+// drizzle.remote.config.ts
+import { defineConfig } from 'drizzle-kit'
+import { d1Config } from 'drizzle-d1-config/http'
+
+export default defineConfig({
+  ...d1Config(),
+  schema: './src/db/schema.ts',
+})
+```
+
+Specify the config file when running `drizzle-kit`:
+
+```jsonc
+// package.json
+{
+  "scripts": {
+    "db:migrate:local": "drizzle-kit migrate",
+    "db:migrate:remote": "drizzle-kit migrate --config ./drizzle.remote.config.ts",
+    "db:studio:local": "drizzle-kit studio",
+    "db:studio:remote": "drizzle-kit studio --config ./drizzle.remote.config.ts",
+  },
+}
+```
+
 ## License
 
 [MIT](./LICENSE)
