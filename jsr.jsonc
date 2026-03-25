@@ -1,6 +1,10 @@
 {
   "name": "@mst-mkt/drizzle-d1-config",
   "version": "0.0.0",
+  "imports": {
+    "@std/jsonc": "jsr:@std/jsonc@^1.0.2",
+    "@std/toml": "jsr:@std/toml@^1.0.11",
+  },
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"],
   },
