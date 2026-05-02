@@ -42,7 +42,7 @@
   "peerDependencies": {
     "drizzle-kit": "^0.31.10"
   },
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@10.33.2",
   "inlinedDependencies": {
     "@jsr/std__collections": "1.1.6",
     "@jsr/std__jsonc": "1.0.2",
