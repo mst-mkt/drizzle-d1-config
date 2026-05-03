@@ -33,7 +33,7 @@
     "@std/jsonc": "jsr:^1.0.2",
     "@std/toml": "jsr:^1.0.11",
     "@types/node": "^24.12.0",
-    "@typescript/native-preview": "7.0.0-dev.20260425.1",
+    "@typescript/native-preview": "7.0.0-dev.20260426.1",
     "bumpp": "^11.0.1",
     "drizzle-kit": "^0.31.10",
     "typescript": "^6.0.2",
