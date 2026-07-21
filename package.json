@@ -32,11 +32,10 @@
   "devDependencies": {
     "@std/jsonc": "jsr:^1.0.2",
     "@std/toml": "jsr:^1.0.11",
-    "@types/node": "^24.12.0",
-    "@typescript/native-preview": "7.0.0-dev.20260707.2",
-    "bumpp": "^11.0.1",
+    "@types/node": "^24.13.3",
+    "bumpp": "^11.1.0",
     "drizzle-kit": "^0.31.10",
-    "typescript": "^7.0.0",
+    "typescript": "^7.0.2",
     "vite-plus": "latest"
   },
   "peerDependencies": {
