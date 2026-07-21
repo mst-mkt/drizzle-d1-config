@@ -106,16 +106,20 @@ export default defineConfig({
 
 Wrangler の設定内に `d1_databases` が複数存在する場合は、使用する DB の binding を指定する必要があります。1 つの場合は自動で解決されます。
 
+環境変数は `process.env` から読み取られます。
+
 #### accountId (HTTP)
 
 1. 引数で明示的に指定された値
-2. Wrangler 設定ファイルの `account_id`
-3. `./node_modules/.cache/wrangler/wrangler-account.json` の `account.id`
+2. 環境変数 `CLOUDFLARE_ACCOUNT_ID`
+3. Wrangler 設定ファイルの `account_id`
+4. `./node_modules/.cache/wrangler/wrangler-account.json` の `account.id`
 
 #### databaseId (HTTP, Local)
 
 1. 引数で明示的に指定された値
-2. Wrangler 設定ファイルの `d1_databases` 内の該当 DB の `database_id`
+2. 環境変数 `CLOUDFLARE_DATABASE_ID`
+3. Wrangler 設定ファイルの `d1_databases` 内の該当 DB の `database_id`
 
 #### migrationsDir (HTTP, Local)
 
@@ -125,7 +129,9 @@ Wrangler の設定内に `d1_databases` が複数存在する場合は、使用�
 #### token (HTTP)
 
 1. 引数で明示的に指定された値
-2. `wrangler auth token --json` の出力から取得
+2. 環境変数 `CLOUDFLARE_D1_TOKEN`
+3. 環境変数 `CLOUDFLARE_API_TOKEN`
+4. `wrangler auth token --json` の出力から取得
    - package manager は自動で検出されます。
 
 #### localSqlitePath (Local)

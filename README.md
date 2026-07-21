@@ -106,16 +106,20 @@ The wrangler config file is searched in this order across all fields.
 
 If multiple entries exist in `d1_databases`, you need to specify the binding name of the target DB. If there is only one, it is resolved automatically.
 
+Environment variables are read from `process.env`.
+
 #### accountId (HTTP)
 
 1. Explicitly provided argument
-2. `account_id` from the wrangler config file
-3. `account.id` from `./node_modules/.cache/wrangler/wrangler-account.json`
+2. `CLOUDFLARE_ACCOUNT_ID` environment variable
+3. `account_id` from the wrangler config file
+4. `account.id` from `./node_modules/.cache/wrangler/wrangler-account.json`
 
 #### databaseId (HTTP, Local)
 
 1. Explicitly provided argument
-2. `database_id` of the matching DB in `d1_databases` from the wrangler config file
+2. `CLOUDFLARE_DATABASE_ID` environment variable
+3. `database_id` of the matching DB in `d1_databases` from the wrangler config file
 
 #### migrationsDir (HTTP, Local)
 
@@ -125,7 +129,9 @@ If multiple entries exist in `d1_databases`, you need to specify the binding nam
 #### token (HTTP)
 
 1. Explicitly provided argument
-2. Retrieved from the output of `wrangler auth token --json`
+2. `CLOUDFLARE_D1_TOKEN` environment variable
+3. `CLOUDFLARE_API_TOKEN` environment variable
+4. Retrieved from the output of `wrangler auth token --json`
    - The package manager is detected automatically.
 
 #### localSqlitePath (Local)

@@ -7,6 +7,7 @@
 import type { Config } from 'drizzle-kit'
 
 import { getD1SqlitePath } from './internal/d1-sqlite'
+import { getDatabaseIdFromEnv } from './internal/env'
 import { getWranglerConfig } from './internal/wrangler'
 
 type D1LocalConfig = {
@@ -16,7 +17,7 @@ type D1LocalConfig = {
   binding?: string
   /** Explicit path to the wrangler config file. Auto-detected from `wrangler.jsonc`, `wrangler.toml`, or `wrangler.json` if omitted. */
   wranglerConfigPath?: string
-  /** D1 database ID. Falls back to the value in wrangler config. */
+  /** D1 database ID. Falls back to `CLOUDFLARE_DATABASE_ID` env var -> wrangler config. */
   databaseId?: string
   /** Wrangler state directory, corresponding to `--persist-to`. Defaults to `.wrangler/state/v3`. */
   persistDir?: string
@@ -31,7 +32,7 @@ type D1LocalDrizzleConfig = Pick<
  * Creates a Drizzle config for local Cloudflare D1 (SQLite via `.wrangler/state/v3/d1`).
  *
  * Resolves values through fallback chains:
- * - `databaseId`: argument -> wrangler config `d1_databases[].database_id`
+ * - `databaseId`: argument -> `CLOUDFLARE_DATABASE_ID` env var -> wrangler config `d1_databases[].database_id`
  * - `out`: argument -> wrangler config `d1_databases[].migrations_dir`
  *
  * @example
@@ -55,17 +56,21 @@ type D1LocalDrizzleConfig = Pick<
  * @throws If multiple D1 databases are found and `binding` is not specified
  */
 export const d1Config = (config: D1LocalConfig = {}): D1LocalDrizzleConfig => {
-  const needsWrangler = config.databaseId === undefined || config.out === undefined
+  const databaseIdFromArgsOrEnv = config.databaseId ?? getDatabaseIdFromEnv()
+
+  const needsWrangler = databaseIdFromArgsOrEnv == null || config.out === undefined
 
   const wrangler = needsWrangler
     ? getWranglerConfig(config.binding, config.wranglerConfigPath)
     : null
 
-  const databaseId = config.databaseId ?? wrangler?.databaseId ?? null
+  const databaseId = databaseIdFromArgsOrEnv ?? wrangler?.databaseId ?? null
   const migrationsDir = config.out ?? wrangler?.migrationsDir ?? null
 
   if (databaseId == null) {
-    throw new Error('databaseId is required. Set it via config or wrangler config d1_databases.')
+    throw new Error(
+      'databaseId is required. Set it via config, CLOUDFLARE_DATABASE_ID env var, or wrangler config d1_databases.',
+    )
   }
 
   return {

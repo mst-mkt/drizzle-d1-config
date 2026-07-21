@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 
-import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test'
 
 import { computeD1Hash } from './internal/d1-sqlite'
 import { d1Config } from './local'
@@ -11,10 +11,12 @@ let tmpDir: string
 
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'drizzle-d1-local-'))
+  vi.stubEnv('CLOUDFLARE_DATABASE_ID', undefined)
 })
 
 afterEach(() => {
   fs.rmSync(tmpDir, { recursive: true })
+  vi.unstubAllEnvs()
 })
 
 const writeWranglerConfig = (config: Record<string, unknown>) => {
@@ -83,6 +85,48 @@ describe('d1Config (local)', () => {
     })
 
     expect(result.dbCredentials.url).toContain(computeD1Hash('secondary-db'))
+  })
+
+  it('resolves databaseId from environment variable', () => {
+    vi.stubEnv('CLOUDFLARE_DATABASE_ID', 'env-db')
+
+    const result = d1Config({ out: './out' })
+
+    expect(result.dbCredentials.url).toContain(computeD1Hash('env-db'))
+  })
+
+  it('environment variable takes priority over wrangler config', () => {
+    const configPath = writeWranglerConfig({
+      d1_databases: [{ binding: 'DB', database_id: 'wrangler-db' }],
+    })
+    vi.stubEnv('CLOUDFLARE_DATABASE_ID', 'env-db')
+
+    const result = d1Config({ wranglerConfigPath: configPath })
+
+    expect(result.dbCredentials.url).toContain(computeD1Hash('env-db'))
+    expect(result.dbCredentials.url).not.toContain(computeD1Hash('wrangler-db'))
+  })
+
+  it('does not read wrangler config when args and env provide all values', () => {
+    const configPath = writeWranglerConfig({
+      d1_databases: [
+        { binding: 'PRIMARY', database_id: 'primary-db' },
+        { binding: 'SECONDARY', database_id: 'secondary-db' },
+      ],
+    })
+    vi.stubEnv('CLOUDFLARE_DATABASE_ID', 'env-db')
+
+    const result = d1Config({ wranglerConfigPath: configPath, out: './out' })
+
+    expect(result.dbCredentials.url).toContain(computeD1Hash('env-db'))
+  })
+
+  it('explicit databaseId takes priority over environment variable', () => {
+    vi.stubEnv('CLOUDFLARE_DATABASE_ID', 'env-db')
+
+    const result = d1Config({ databaseId: 'explicit-db', out: './out' })
+
+    expect(result.dbCredentials.url).toContain(computeD1Hash('explicit-db'))
   })
 
   it('throws when databaseId cannot be resolved', () => {
