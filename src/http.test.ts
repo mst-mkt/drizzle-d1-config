@@ -17,11 +17,17 @@ let tmpDir: string
 
 beforeEach(() => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'drizzle-d1-http-'))
+  mockedGetTokenFromCli.mockClear()
   mockedGetTokenFromCli.mockReturnValue('mocked-cli-token')
+  vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', undefined)
+  vi.stubEnv('CLOUDFLARE_DATABASE_ID', undefined)
+  vi.stubEnv('CLOUDFLARE_D1_TOKEN', undefined)
+  vi.stubEnv('CLOUDFLARE_API_TOKEN', undefined)
 })
 
 afterEach(() => {
   fs.rmSync(tmpDir, { recursive: true })
+  vi.unstubAllEnvs()
 })
 
 const writeWranglerConfig = (config: Record<string, unknown>) => {
@@ -97,6 +103,79 @@ describe('d1Config (http)', () => {
     })
 
     expect(result.dbCredentials.databaseId).toBe('analytics-db')
+  })
+
+  it('resolves values from environment variables', () => {
+    vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', 'env-acc')
+    vi.stubEnv('CLOUDFLARE_DATABASE_ID', 'env-db')
+    vi.stubEnv('CLOUDFLARE_API_TOKEN', 'env-token')
+
+    const result = d1Config({ out: './out' })
+
+    expect(result.dbCredentials).toEqual({
+      accountId: 'env-acc',
+      databaseId: 'env-db',
+      token: 'env-token',
+    })
+  })
+
+  it('environment variables take priority over wrangler config', () => {
+    const configPath = writeWranglerConfig({
+      account_id: 'wrangler-acc',
+      d1_databases: [{ binding: 'DB', database_id: 'wrangler-db' }],
+    })
+    vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', 'env-acc')
+    vi.stubEnv('CLOUDFLARE_DATABASE_ID', 'env-db')
+
+    const result = d1Config({ wranglerConfigPath: configPath, token: 'tok' })
+
+    expect(result.dbCredentials.accountId).toBe('env-acc')
+    expect(result.dbCredentials.databaseId).toBe('env-db')
+  })
+
+  it('explicit values take priority over environment variables', () => {
+    vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', 'env-acc')
+    vi.stubEnv('CLOUDFLARE_DATABASE_ID', 'env-db')
+    vi.stubEnv('CLOUDFLARE_API_TOKEN', 'env-token')
+
+    const result = d1Config({
+      accountId: 'explicit-acc',
+      databaseId: 'explicit-db',
+      token: 'explicit-token',
+      out: './out',
+    })
+
+    expect(result.dbCredentials).toEqual({
+      accountId: 'explicit-acc',
+      databaseId: 'explicit-db',
+      token: 'explicit-token',
+    })
+  })
+
+  it('does not read wrangler config when args and env provide all values', () => {
+    // Reading this config without `binding` would throw a multiple-databases error
+    const configPath = writeWranglerConfig({
+      d1_databases: [
+        { binding: 'PRIMARY', database_id: 'primary-db' },
+        { binding: 'SECONDARY', database_id: 'secondary-db' },
+      ],
+    })
+    vi.stubEnv('CLOUDFLARE_ACCOUNT_ID', 'env-acc')
+    vi.stubEnv('CLOUDFLARE_DATABASE_ID', 'env-db')
+    vi.stubEnv('CLOUDFLARE_API_TOKEN', 'env-token')
+
+    const result = d1Config({ wranglerConfigPath: configPath, out: './out' })
+
+    expect(result.dbCredentials.databaseId).toBe('env-db')
+  })
+
+  it('environment variable token takes priority over CLI token', () => {
+    vi.stubEnv('CLOUDFLARE_API_TOKEN', 'env-token')
+
+    const result = d1Config({ accountId: 'acc', databaseId: 'db', out: './out' })
+
+    expect(result.dbCredentials.token).toBe('env-token')
+    expect(mockedGetTokenFromCli).not.toHaveBeenCalled()
   })
 
   it('throws when accountId cannot be resolved', () => {

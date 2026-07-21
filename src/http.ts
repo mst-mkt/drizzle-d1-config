@@ -8,6 +8,7 @@ import type { Config } from 'drizzle-kit'
 
 import { getAccountIdFromCache } from './internal/account'
 import { getTokenFromCli } from './internal/cli'
+import { getAccountIdFromEnv, getDatabaseIdFromEnv, getTokenFromEnv } from './internal/env'
 import { getWranglerConfig } from './internal/wrangler'
 
 export type D1HttpConfig = {
@@ -17,11 +18,11 @@ export type D1HttpConfig = {
   binding?: string
   /** Explicit path to the wrangler config file. Auto-detected from `wrangler.jsonc`, `wrangler.toml`, or `wrangler.json` if omitted. */
   wranglerConfigPath?: string
-  /** Cloudflare account ID. Falls back to wrangler config -> wrangler account cache. */
+  /** Cloudflare account ID. Falls back to `CLOUDFLARE_ACCOUNT_ID` env var -> wrangler config -> wrangler account cache. */
   accountId?: string
-  /** D1 database ID. Falls back to the value in wrangler config. */
+  /** D1 database ID. Falls back to `CLOUDFLARE_DATABASE_ID` env var -> wrangler config. */
   databaseId?: string
-  /** Cloudflare API token. Falls back to `wrangler auth token --json` CLI. */
+  /** Cloudflare API token. Falls back to `CLOUDFLARE_D1_TOKEN` / `CLOUDFLARE_API_TOKEN` env vars -> `wrangler auth token --json` CLI. */
   token?: string
 }
 
@@ -34,9 +35,9 @@ type D1HttpDrizzleConfig = Pick<
  * Creates a Drizzle config for Cloudflare D1 via HTTP (remote).
  *
  * Resolves values through fallback chains:
- * - `accountId`: argument -> wrangler config `account_id` -> wrangler account cache
- * - `databaseId`: argument -> wrangler config `d1_databases[].database_id`
- * - `token`: argument -> `wrangler auth token --json` CLI
+ * - `accountId`: argument -> `CLOUDFLARE_ACCOUNT_ID` env var -> wrangler config `account_id` -> wrangler account cache
+ * - `databaseId`: argument -> `CLOUDFLARE_DATABASE_ID` env var -> wrangler config `d1_databases[].database_id`
+ * - `token`: argument -> `CLOUDFLARE_D1_TOKEN` / `CLOUDFLARE_API_TOKEN` env vars -> `wrangler auth token --json` CLI
  * - `out`: argument -> wrangler config `d1_databases[].migrations_dir`
  *
  * @example
@@ -64,25 +65,34 @@ type D1HttpDrizzleConfig = Pick<
  * @throws If multiple D1 databases are found and `binding` is not specified
  */
 export const d1Config = (config: D1HttpConfig = {}): D1HttpDrizzleConfig => {
+  const accountIdFromArgsOrEnv = config.accountId ?? getAccountIdFromEnv()
+  const databaseIdFromArgsOrEnv = config.databaseId ?? getDatabaseIdFromEnv()
+
   const needsWrangler =
-    config.accountId === undefined || config.databaseId === undefined || config.out === undefined
+    accountIdFromArgsOrEnv == null || databaseIdFromArgsOrEnv == null || config.out === undefined
 
   const wrangler = needsWrangler
     ? getWranglerConfig(config.binding, config.wranglerConfigPath)
     : null
 
-  const accountId = config.accountId ?? wrangler?.accountId ?? getAccountIdFromCache()
-  const databaseId = config.databaseId ?? wrangler?.databaseId ?? null
-  const token = config.token ?? getTokenFromCli()
+  const accountId = accountIdFromArgsOrEnv ?? wrangler?.accountId ?? getAccountIdFromCache()
+  const databaseId = databaseIdFromArgsOrEnv ?? wrangler?.databaseId ?? null
+  const token = config.token ?? getTokenFromEnv() ?? getTokenFromCli()
 
   if (accountId == null) {
-    throw new Error('accountId is required. Set it via config, wrangler config, or wrangler auth.')
+    throw new Error(
+      'accountId is required. Set it via config, CLOUDFLARE_ACCOUNT_ID env var, wrangler config, or wrangler auth.',
+    )
   }
   if (databaseId == null) {
-    throw new Error('databaseId is required. Set it via config or wrangler config d1_databases.')
+    throw new Error(
+      'databaseId is required. Set it via config, CLOUDFLARE_DATABASE_ID env var, or wrangler config d1_databases.',
+    )
   }
   if (token == null) {
-    throw new Error('token is required. Set it via config or wrangler auth.')
+    throw new Error(
+      'token is required. Set it via config, CLOUDFLARE_D1_TOKEN / CLOUDFLARE_API_TOKEN env var, or wrangler auth.',
+    )
   }
 
   return {
