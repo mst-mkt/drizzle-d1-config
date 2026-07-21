@@ -39,7 +39,7 @@
     "vite-plus": "latest"
   },
   "peerDependencies": {
-    "drizzle-kit": "^0.31.10"
+    "drizzle-kit": ">=0.21.3 <2.0.0 || ^1.0.0-0"
   },
   "devEngines": {
     "packageManager": {
