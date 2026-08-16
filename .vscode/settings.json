@@ -45,5 +45,11 @@
   },
   "[markdown]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
-  }
+  },
+
+  "oxc.typeAware": true,
+  "oxc.fmt.configPath": "./vite.config.ts",
+  "oxc.useExecPath": true,
+  "oxc.path.oxfmt": "node_modules/vite-plus/bin/oxfmt",
+  "oxc.path.oxlint": "node_modules/vite-plus/bin/oxlint"
 }
