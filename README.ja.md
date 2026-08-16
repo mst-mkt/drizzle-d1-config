@@ -15,6 +15,13 @@ Cloudflare D1 を使用する際に `drizzle.config.ts` を簡単に設定する
 pnpm add drizzle-d1-config
 ```
 
+> [!NOTE]
+> `cloudflare.config.ts` を使う場合は、optional peer dependency の `@cloudflare/config` をインストールしてください。
+>
+> ```bash
+> pnpm add @cloudflare/config
+> ```
+
 ## Usage
 
 ### HTTP (Remote)

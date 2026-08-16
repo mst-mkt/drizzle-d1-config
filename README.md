@@ -15,6 +15,13 @@ Automatically resolves the necessary settings from `wrangler.jsonc` and other so
 pnpm add drizzle-d1-config
 ```
 
+> [!NOTE]
+> To use `cloudflare.config.ts`, install the optional peer dependency `@cloudflare/config`.
+>
+> ```bash
+> pnpm add @cloudflare/config
+> ```
+
 ## Usage
 
 ### HTTP (Remote)
