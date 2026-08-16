@@ -76,33 +76,36 @@ export default defineConfig({
 
 #### HTTP
 
-| Option               | Description                   | Note                                                            |
-| -------------------- | ----------------------------- | --------------------------------------------------------------- |
-| `out`                | migration の output directory |                                                                 |
-| `binding`            | D1 binding 名                 | 複数 D1 database がある場合は必須                               |
-| `wranglerConfigPath` | wrangler config file の path  | `wrangler.jsonc`, `wrangler.toml`, `wrangler.json` は自動で検出 |
-| `accountId`          | Cloudflare account ID         |                                                                 |
-| `databaseId`         | D1 database ID                |                                                                 |
-| `token`              | Cloudflare API token          |                                                                 |
+| Option               | Description                    | Note                                                                                    |
+| -------------------- | ------------------------------ | --------------------------------------------------------------------------------------- |
+| `out`                | migration の output directory  |                                                                                         |
+| `binding`            | D1 binding 名                  | 複数 D1 database がある場合は必須                                                       |
+| `wranglerConfigPath` | wrangler config file の path   | `cloudflare.config.ts`, `wrangler.jsonc`, `wrangler.toml`, `wrangler.json` は自動で検出 |
+| `mode`               | `cloudflare.config.ts` の mode | 関数形式の config に `ctx.mode` として渡される                                          |
+| `accountId`          | Cloudflare account ID          |                                                                                         |
+| `databaseId`         | D1 database ID                 |                                                                                         |
+| `token`              | Cloudflare API token           |                                                                                         |
 
 #### Local
 
-| Option               | Description                   | Note                                                            |
-| -------------------- | ----------------------------- | --------------------------------------------------------------- |
-| `out`                | migration の output directory |                                                                 |
-| `binding`            | D1 binding 名                 | 複数 D1 database がある場合は必須                               |
-| `wranglerConfigPath` | wrangler config file の path  | `wrangler.jsonc`, `wrangler.toml`, `wrangler.json` は自動で検出 |
-| `databaseId`         | D1 database ID                |                                                                 |
-| `persistDir`         | wrangler の state directory   | Wrangler で `--persist-to` を使用している場合は必要             |
+| Option               | Description                    | Note                                                                                    |
+| -------------------- | ------------------------------ | --------------------------------------------------------------------------------------- |
+| `out`                | migration の output directory  |                                                                                         |
+| `binding`            | D1 binding 名                  | 複数 D1 database がある場合は必須                                                       |
+| `wranglerConfigPath` | wrangler config file の path   | `cloudflare.config.ts`, `wrangler.jsonc`, `wrangler.toml`, `wrangler.json` は自動で検出 |
+| `mode`               | `cloudflare.config.ts` の mode | 関数形式の config に `ctx.mode` として渡される                                          |
+| `databaseId`         | D1 database ID                 |                                                                                         |
+| `persistDir`         | wrangler の state directory    | Wrangler で `--persist-to` を使用している場合は必要                                     |
 
 ### Resolution Details
 
 各設定値は以下の優先順位で解決されます。
 全項目で共通して、Wrangler の設定ファイルは以下の順番で探索されます。
 
-1. `wrangler.jsonc`
-2. `wrangler.toml`
-3. `wrangler.json`
+1. `cloudflare.config.ts`
+2. `wrangler.jsonc`
+3. `wrangler.toml`
+4. `wrangler.json`
 
 Wrangler の設定内に `d1_databases` が複数存在する場合は、使用する DB の binding を指定する必要があります。1 つの場合は自動で解決されます。
 
@@ -125,6 +128,14 @@ Wrangler の設定内に `d1_databases` が複数存在する場合は、使用�
 
 1. 引数で明示的に指定された値
 2. Wrangler 設定ファイルの `d1_databases` 内の該当 DB の `migrations_dir`
+
+> [!NOTE]
+> `cloudflare.config.ts` には `migrations_dir` に相当する設定がないため、`out` が解決されることはありません。
+> `out` を明示的に指定してください。Wrangler 自身も同様の挙動で、既定の migrations directory にフォールバックします。
+>
+> ```ts
+> d1Config({ out: './drizzle/migrations' })
+> ```
 
 #### token (HTTP)
 
