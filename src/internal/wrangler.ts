@@ -3,9 +3,15 @@ import path from 'node:path'
 import * as jsonc from '@std/jsonc'
 import * as toml from '@std/toml'
 
+import { loadTypeScriptConfig } from './typescript-config'
 import { fileExists, isRecord, readFile } from './utils'
 
-const DEFAULT_CONFIG_PATHS = ['./wrangler.jsonc', './wrangler.toml', './wrangler.json']
+const DEFAULT_CONFIG_PATHS = [
+  './cloudflare.config.ts',
+  './wrangler.jsonc',
+  './wrangler.toml',
+  './wrangler.json',
+]
 
 const parsers = {
   jsonc: jsonc.parse,
@@ -80,24 +86,37 @@ export const getMigrationsDir = (d1Config: Record<string, unknown>) => {
 
 const NULL_CONFIG = { accountId: null, databaseId: null, migrationsDir: null }
 
+const readStaticConfig = (configPath: string) => {
+  const content = readFile(configPath)
+  if (content === null) return null
+
+  return parseWranglerConfig(content, getExtName(configPath))
+}
+
 /**
  * Reads and parses a wrangler config file to extract D1-related settings.
- * Automatically searches for `wrangler.jsonc`, `wrangler.toml`, or `wrangler.json` if no path is provided.
+ * Automatically searches for `cloudflare.config.ts`, `wrangler.jsonc`, `wrangler.toml`, or `wrangler.json` if no path is provided.
+ * A `.ts` config is evaluated rather than parsed.
  *
  * @param d1Binding - The D1 binding name to look up in `d1_databases` (e.g. `"DB"`). If omitted and there is exactly one D1 database, it is used automatically.
  * @param wranglerConfigPath - Optional explicit path to the wrangler config file
+ * @param mode - The `ctx.mode` passed to a function-form `cloudflare.config.ts`. Defaults to the `CLOUDFLARE_ENV` env var.
  * @returns An object with `accountId`, `databaseId`, and `migrationsDir` (each `string | null`)
  * @throws If multiple D1 databases are found and `d1Binding` is not specified
+ * @throws If a `cloudflare.config.ts` was selected but could not be evaluated
  */
-export const getWranglerConfig = (d1Binding?: string, wranglerConfigPath?: string) => {
+export const getWranglerConfig = (
+  d1Binding?: string,
+  wranglerConfigPath?: string,
+  mode?: string,
+) => {
   const configPath = wranglerConfigPath ?? findConfigPath()
   if (configPath === undefined) return NULL_CONFIG
 
-  const content = readFile(configPath)
-  if (content === null) return NULL_CONFIG
-
-  const ext = getExtName(configPath)
-  const config = parseWranglerConfig(content, ext)
+  const config =
+    getExtName(configPath) === 'ts'
+      ? loadTypeScriptConfig(configPath, mode)
+      : readStaticConfig(configPath)
   if (config === null) return NULL_CONFIG
 
   const d1Config = getD1Binding(config, d1Binding)

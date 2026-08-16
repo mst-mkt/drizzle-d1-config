@@ -15,12 +15,17 @@ export default defineConfig({
     '*': 'vp check --fix',
   },
   pack: {
-    entry: ['./src/local.ts', './src/http.ts'],
+    entry: ['./src/local.ts', './src/http.ts', './src/load-typescript-config.ts'],
     format: ['esm'],
     dts: { tsgo: true },
     clean: true,
     platform: 'node',
-    exports: true,
+    exports: {
+      customExports: (exports) => {
+        const { './load-typescript-config': _, ...rest } = exports
+        return rest
+      },
+    },
     deps: { alwaysBundle: ['@std/jsonc', '@std/toml'] },
   },
   fmt: {

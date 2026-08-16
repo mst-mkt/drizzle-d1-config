@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vite-plus/test'
 
+import { loadTypeScriptConfig } from './typescript-config'
 import { fileExists, readFile } from './utils'
 import {
   getAccountId,
@@ -19,8 +20,13 @@ vi.mock('./utils', async (importOriginal) => {
   }
 })
 
+vi.mock('./typescript-config', () => ({
+  loadTypeScriptConfig: vi.fn<(path: string, mode?: string) => Record<string, unknown>>(() => ({})),
+}))
+
 const mockedReadFile = vi.mocked(readFile)
 const mockedFileExists = vi.mocked(fileExists)
+const mockedLoadTypeScriptConfig = vi.mocked(loadTypeScriptConfig)
 
 describe('parseWranglerConfig', () => {
   it('parses jsonc', () => {
@@ -284,6 +290,21 @@ describe('getWranglerConfig', () => {
       databaseId: 'db-456',
       migrationsDir: './migrations',
     })
+  })
+
+  it('evaluates a .ts config instead of parsing it', () => {
+    mockedLoadTypeScriptConfig.mockReturnValueOnce({
+      account_id: 'acc-ts',
+      d1_databases: [{ binding: 'DB', database_id: 'db-ts' }],
+    })
+
+    const result = getWranglerConfig('DB', './configs/cloudflare.config.ts', 'staging')
+
+    expect(mockedLoadTypeScriptConfig).toHaveBeenCalledWith(
+      './configs/cloudflare.config.ts',
+      'staging',
+    )
+    expect(result).toEqual({ accountId: 'acc-ts', databaseId: 'db-ts', migrationsDir: null })
   })
 
   it('returns null fields when config file not found', () => {
