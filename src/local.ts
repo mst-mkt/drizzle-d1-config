@@ -15,8 +15,10 @@ type D1LocalConfig = {
   out?: string
   /** D1 binding name to look up in `d1_databases`. If omitted and there is exactly one D1 database, it is used automatically. */
   binding?: string
-  /** Explicit path to the wrangler config file. Auto-detected from `wrangler.jsonc`, `wrangler.toml`, or `wrangler.json` if omitted. */
+  /** Explicit path to the wrangler config file. Auto-detected from `cloudflare.config.ts`, `wrangler.jsonc`, `wrangler.toml`, or `wrangler.json` if omitted. */
   wranglerConfigPath?: string
+  /** Mode (`ctx.mode`) passed to a function-form `cloudflare.config.ts`. Falls back to the `CLOUDFLARE_ENV` env var. */
+  mode?: string
   /** D1 database ID. Falls back to `CLOUDFLARE_DATABASE_ID` env var -> wrangler config. */
   databaseId?: string
   /** Wrangler state directory, corresponding to `--persist-to`. Defaults to `.wrangler/state/v3`. */
@@ -61,7 +63,7 @@ export const d1Config = (config: D1LocalConfig = {}): D1LocalDrizzleConfig => {
   const needsWrangler = databaseIdFromArgsOrEnv == null || config.out === undefined
 
   const wrangler = needsWrangler
-    ? getWranglerConfig(config.binding, config.wranglerConfigPath)
+    ? getWranglerConfig(config.binding, config.wranglerConfigPath, config.mode)
     : null
 
   const databaseId = databaseIdFromArgsOrEnv ?? wrangler?.databaseId ?? null

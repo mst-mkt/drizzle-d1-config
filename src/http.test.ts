@@ -36,6 +36,12 @@ const writeWranglerConfig = (config: Record<string, unknown>) => {
   return filePath
 }
 
+const writeCloudflareConfig = (content: string) => {
+  const filePath = path.join(tmpDir, 'cloudflare.config.ts')
+  fs.writeFileSync(filePath, content)
+  return filePath
+}
+
 describe('d1Config (http)', () => {
   it('resolves values from wrangler config with CLI token fallback', () => {
     const configPath = writeWranglerConfig({
@@ -176,6 +182,31 @@ describe('d1Config (http)', () => {
 
     expect(result.dbCredentials.token).toBe('env-token')
     expect(mockedGetTokenFromCli).not.toHaveBeenCalled()
+  })
+
+  it('resolves values from cloudflare.config.ts', () => {
+    const configPath = writeCloudflareConfig(`
+      export const settings = { type: 'settings', accountId: 'acc-from-ts' }
+      export default {
+        type: 'worker',
+        name: 'my-worker',
+        compatibilityDate: '2026-01-01',
+        env: { DB: { type: 'd1', id: 'db-from-ts' } },
+      }
+    `)
+
+    const result = d1Config({ wranglerConfigPath: configPath })
+
+    expect(result).toEqual({
+      out: undefined,
+      dialect: 'sqlite',
+      driver: 'd1-http',
+      dbCredentials: {
+        accountId: 'acc-from-ts',
+        databaseId: 'db-from-ts',
+        token: 'mocked-cli-token',
+      },
+    })
   })
 
   it('throws when accountId cannot be resolved', () => {

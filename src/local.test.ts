@@ -25,6 +25,12 @@ const writeWranglerConfig = (config: Record<string, unknown>) => {
   return filePath
 }
 
+const writeCloudflareConfig = (content: string) => {
+  const filePath = path.join(tmpDir, 'cloudflare.config.ts')
+  fs.writeFileSync(filePath, content)
+  return filePath
+}
+
 describe('d1Config (local)', () => {
   it('resolves databaseId and migrationsDir from wrangler config', () => {
     const configPath = writeWranglerConfig({
@@ -133,6 +139,22 @@ describe('d1Config (local)', () => {
     const configPath = writeWranglerConfig({})
 
     expect(() => d1Config({ wranglerConfigPath: configPath })).toThrow('databaseId is required')
+  })
+
+  it('resolves databaseId from cloudflare.config.ts', () => {
+    const configPath = writeCloudflareConfig(`
+      export default {
+        type: 'worker',
+        name: 'my-worker',
+        compatibilityDate: '2026-01-01',
+        env: { DB: { type: 'd1', id: 'ts-db-id' } },
+      }
+    `)
+
+    const result = d1Config({ wranglerConfigPath: configPath })
+
+    expect(result.dialect).toBe('sqlite')
+    expect(result.dbCredentials.url).toContain(computeD1Hash('ts-db-id'))
   })
 
   it('out is undefined when migrationsDir is not in wrangler config', () => {

@@ -15,6 +15,13 @@ Automatically resolves the necessary settings from `wrangler.jsonc` and other so
 pnpm add drizzle-d1-config
 ```
 
+> [!NOTE]
+> To use `cloudflare.config.ts`, install the optional peer dependency `@cloudflare/config`.
+>
+> ```bash
+> pnpm add @cloudflare/config
+> ```
+
 ## Usage
 
 ### HTTP (Remote)
@@ -76,33 +83,36 @@ All options are optional.
 
 #### HTTP
 
-| Option               | Description                | Note                                                                 |
-| -------------------- | -------------------------- | -------------------------------------------------------------------- |
-| `out`                | Migration output directory |                                                                      |
-| `binding`            | D1 binding name            | Required if multiple D1 databases exist                              |
-| `wranglerConfigPath` | Wrangler config file path  | `wrangler.jsonc`, `wrangler.toml`, `wrangler.json` are auto-detected |
-| `accountId`          | Cloudflare account ID      |                                                                      |
-| `databaseId`         | D1 database ID             |                                                                      |
-| `token`              | Cloudflare API token       |                                                                      |
+| Option               | Description                     | Note                                                                                         |
+| -------------------- | ------------------------------- | -------------------------------------------------------------------------------------------- |
+| `out`                | Migration output directory      |                                                                                              |
+| `binding`            | D1 binding name                 | Required if multiple D1 databases exist                                                      |
+| `wranglerConfigPath` | Wrangler config file path       | `cloudflare.config.ts`, `wrangler.jsonc`, `wrangler.toml`, `wrangler.json` are auto-detected |
+| `mode`               | Mode for `cloudflare.config.ts` | Passed as `ctx.mode` to a function-form config                                               |
+| `accountId`          | Cloudflare account ID           |                                                                                              |
+| `databaseId`         | D1 database ID                  |                                                                                              |
+| `token`              | Cloudflare API token            |                                                                                              |
 
 #### Local
 
-| Option               | Description                | Note                                                                 |
-| -------------------- | -------------------------- | -------------------------------------------------------------------- |
-| `out`                | Migration output directory |                                                                      |
-| `binding`            | D1 binding name            | Required if multiple D1 databases exist                              |
-| `wranglerConfigPath` | Wrangler config file path  | `wrangler.jsonc`, `wrangler.toml`, `wrangler.json` are auto-detected |
-| `databaseId`         | D1 database ID             |                                                                      |
-| `persistDir`         | Wrangler state directory   | Required if using `--persist-to` with Wrangler                       |
+| Option               | Description                     | Note                                                                                         |
+| -------------------- | ------------------------------- | -------------------------------------------------------------------------------------------- |
+| `out`                | Migration output directory      |                                                                                              |
+| `binding`            | D1 binding name                 | Required if multiple D1 databases exist                                                      |
+| `wranglerConfigPath` | Wrangler config file path       | `cloudflare.config.ts`, `wrangler.jsonc`, `wrangler.toml`, `wrangler.json` are auto-detected |
+| `mode`               | Mode for `cloudflare.config.ts` | Passed as `ctx.mode` to a function-form config                                               |
+| `databaseId`         | D1 database ID                  |                                                                                              |
+| `persistDir`         | Wrangler state directory        | Required if using `--persist-to` with Wrangler                                               |
 
 ### Resolution Details
 
 Each value is resolved in the following priority order.
 The wrangler config file is searched in this order across all fields.
 
-1. `wrangler.jsonc`
-2. `wrangler.toml`
-3. `wrangler.json`
+1. `cloudflare.config.ts`
+2. `wrangler.jsonc`
+3. `wrangler.toml`
+4. `wrangler.json`
 
 If multiple entries exist in `d1_databases`, you need to specify the binding name of the target DB. If there is only one, it is resolved automatically.
 
@@ -125,6 +135,14 @@ Environment variables are read from `process.env`.
 
 1. Explicitly provided argument
 2. `migrations_dir` of the matching DB in `d1_databases` from the wrangler config file
+
+> [!NOTE]
+> `cloudflare.config.ts` has no equivalent of `migrations_dir`, so `out` is never resolved from it.
+> Pass `out` explicitly. Wrangler itself behaves the same way and falls back to its default migrations directory.
+>
+> ```ts
+> d1Config({ out: './drizzle/migrations' })
+> ```
 
 #### token (HTTP)
 
