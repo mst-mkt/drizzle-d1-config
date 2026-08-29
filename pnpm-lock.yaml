@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@cloudflare/config':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.7.0
+        version: 0.7.0
       '@std/jsonc':
         specifier: jsr:^1.0.2
         version: '@jsr/std__jsonc@1.0.2'
@@ -50,8 +50,8 @@ packages:
   '@blazediff/core@1.9.1':
     resolution: {integrity: sha512-ehg3jIkYKulZh+8om/O25vkvSsXXwC+skXmyA87FFx6A/45eqOkZsBltMw/TVteb0mloiGT8oGRTcjRAz66zaA==}
 
-  '@cloudflare/config@0.5.0':
-    resolution: {integrity: sha512-sLTNYp/rAHXs7HKTLV6rV/IIBXzn1U5pNO0XTChPSHO3ZlH+vjfeJifyA/XuVg0TExdKYssh4TuTdqAixn0OtQ==}
+  '@cloudflare/config@0.7.0':
+    resolution: {integrity: sha512-u7qQYdHTEvMouwQp+nmnEhXcR6yQ/e5qHiqid9iVKD7h24ONR03AXKxfh+L2gmLC5+OVHb2QNJFxhsVuUwVoHQ==}
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
@@ -2006,7 +2006,7 @@ snapshots:
 
   '@blazediff/core@1.9.1': {}
 
-  '@cloudflare/config@0.5.0':
+  '@cloudflare/config@0.7.0':
     dependencies:
       zod: 4.4.3
 
