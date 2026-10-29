@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@cloudflare/config':
-        specifier: ^0.7.0
-        version: 0.7.0
+        specifier: ^0.28.0
+        version: 0.28.1
       '@std/jsonc':
         specifier: jsr:^1.0.2
         version: '@jsr/std__jsonc@1.0.2'
@@ -50,8 +50,8 @@ packages:
   '@blazediff/core@1.9.1':
     resolution: {integrity: sha512-ehg3jIkYKulZh+8om/O25vkvSsXXwC+skXmyA87FFx6A/45eqOkZsBltMw/TVteb0mloiGT8oGRTcjRAz66zaA==}
 
-  '@cloudflare/config@0.7.0':
-    resolution: {integrity: sha512-u7qQYdHTEvMouwQp+nmnEhXcR6yQ/e5qHiqid9iVKD7h24ONR03AXKxfh+L2gmLC5+OVHb2QNJFxhsVuUwVoHQ==}
+  '@cloudflare/config@0.28.1':
+    resolution: {integrity: sha512-pQS0jJmk2grEK2XdkvJxyk8y8W607D4daOrEdv+iyqSslSLTvH7lChF/3fpCQIy//3rBLUnzanZ8rgyekbh0/g==}
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
@@ -2011,8 +2011,8 @@ packages:
   yuku-parser@0.5.48:
     resolution: {integrity: sha512-OWBfhrpgK9+/4+IXG9oT8Bao4AhViQA7vdyNNH7EUg8dQYgwa70XtIBWTpCEme1P1ECyoDNYkn0wT63f8XRcVA==}
 
-  zod@4.4.3:
-    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+  zod@4.6.6:
+    resolution: {integrity: sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==}
 
 snapshots:
 
@@ -2028,9 +2028,9 @@ snapshots:
 
   '@blazediff/core@1.9.1': {}
 
-  '@cloudflare/config@0.7.0':
+  '@cloudflare/config@0.28.1':
     dependencies:
-      zod: 4.4.3
+      zod: 4.6.6
 
   '@drizzle-team/brocli@0.10.2': {}
 
@@ -3457,4 +3457,4 @@ snapshots:
       '@yuku-parser/binding-win32-arm64': 0.5.48
       '@yuku-parser/binding-win32-x64': 0.5.48
 
-  zod@4.4.3: {}
+  zod@4.6.6: {}
